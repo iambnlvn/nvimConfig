@@ -111,6 +111,12 @@ lspconfig.ts_ls.setup {
       pattern = { "*.ts", "*.tsx" },
       callback = organize_imports,
     })
+    vim.api.nvim_create_autocmd("BufWritePre",{
+      pattern="*",
+      callback = function()
+        require("conform").format()
+      end,
+    })
   end,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,

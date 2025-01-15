@@ -15,7 +15,7 @@ end
 
 -- EXAMPLE
 local servers =
-  { "html", "cssls", "tailwindcss", "ts_ls", "gopls", "zls", "clangd", "pyright", "asm_lsp", "astro", "lua_ls" }
+  { "html", "cssls", "tailwindcss", "ts_ls", "gopls", "zls", "clangd", "pyright", "asm_lsp", "astro", "lua_ls", }
 local nvlsp = require "nvchad.configs.lspconfig"
 
 -- lsps with default config
@@ -112,7 +112,7 @@ lspconfig.ts_ls.setup {
       callback = organize_imports,
     })
     vim.api.nvim_create_autocmd("BufWritePre",{
-      pattern="*",
+        pattern = { "*.jsx", "*.tsx", "*.js", "*.ts" },
       callback = function()
         require("conform").format()
       end,
@@ -187,22 +187,6 @@ lspconfig.zls.setup {
     },
   },
 }
-
--- Format on save
-local lsp_formatting = function(bufnr)
-  vim.lsp.buf.format {
-    filter = function(client)
-      return client.name == "zls"
-    end,
-    bufnr = bufnr,
-  }
-end
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.zig" },
-  callback = function()
-    lsp_formatting(vim.api.nvim_get_current_buf())
-  end,
-})
 
 local signs = { Error = "✘", Warn = "▲", Hint = "⚑", Info = "" }
 for type, icon in pairs(signs) do

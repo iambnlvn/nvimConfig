@@ -93,6 +93,44 @@ lspconfig.tailwindcss.setup {
   ),
 }
 
+lspconfig.eslint.setup({
+  on_attach = function(client, bufnr)
+    -- Run ESLint only on save
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "EslintFixAll",
+    })
+    
+    -- Diagnostic keymaps
+    local opts = { noremap = true, silent = true }
+    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+    vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, opts)
+  end,
+  capabilities = nvlsp.capabilities,
+  settings = {
+    workingDirectory = { mode = "auto" },
+    format = false, -- disable eslint formatting (use prettier)
+    quiet = false,
+    onIgnoredFiles = "off",
+    rulesCustomizations = {},
+    run = "onSave", -- Changed from "onType" to "onSave"
+    problems = {
+      shortenToSingleLine = false,
+    },
+    codeAction = {
+      disableRuleComment = {
+        enable = true,
+        location = "separateLine"
+      },
+      showDocumentation = {
+        enable = true
+      }
+    },
+    experimental = {}
+  },
+})
+
 lspconfig.ts_ls.setup {
 
   on_attach = function(client, bufnr)
@@ -114,7 +152,7 @@ lspconfig.ts_ls.setup {
     vim.api.nvim_create_autocmd("BufWritePre",{
         pattern = { "*.jsx", "*.tsx", "*.js", "*.ts" },
       callback = function()
-        require("conform").format()
+        require("conform").format({async = true})
       end,
     })
   end,
